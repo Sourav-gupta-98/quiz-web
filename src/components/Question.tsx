@@ -3,10 +3,16 @@ import {useNavigate} from "react-router";
 import {toast} from "react-toastify";
 import axios from "axios";
 
+
+interface SelfData {
+    self: any;
+    token: string;
+}
+
 const Question = () => {
     const appUrl = import.meta.env.VITE_API_BACKEND_URL;
     const navigate = useNavigate();
-    const [selfData, setSelfData] = useState({self:'', token:''});
+    const [selfData, setSelfData] = useState<SelfData | undefined>(undefined);
     const [question, setQuestion] = useState({
         id: '',
         question: '',
