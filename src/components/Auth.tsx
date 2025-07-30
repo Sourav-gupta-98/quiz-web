@@ -1,26 +1,117 @@
-import {useState} from "react";
-import { toast } from 'react-toastify';
+import {useEffect, useState} from "react";
+import {toast} from 'react-toastify';
+import axios from "axios";
+import {useNavigate} from "react-router";
+
 const Auth = () => {
+    const navigate = useNavigate();
+    const baseUrl = import.meta.env.VITE_API_BACKEND_URL;
     const [isLogin, setIsLogin] = useState(true);
-    const showSuccess = () => {
-        toast.success("Success! Operation completed.",{
-            theme: "dark",
-            autoClose: 1000,
-            hideProgressBar: false,
-            pauseOnHover: true,
-            pauseOnClick: true,
-            draggable: true,
-            type:'info',
-            onClose: () => {
-                alert('Connection closed.');
-            },
-
-        });
-    };
-
-    const showError = () => {
-        toast.error("Error! Something went wrong.");
-    };
+    const [isRegister, setIsRegister] = useState(true);
+    const [isLoginSubmitted, setIsLoginSubmitted] = useState(false);
+    const [isRegisterSubmitted, setIsRegisterSubmitted] = useState(false);
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: ""
+    })
+    useEffect(() => {
+        const self = localStorage.getItem('self');
+        const token = localStorage.getItem('token');
+        if (self && token) {
+            navigate('/')
+        }
+    }, [])
+    const register = async (e: any) => {
+        e.preventDefault();
+        setIsRegisterSubmitted(true);
+        if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
+            toast.error("Please fill required Fields!", {
+                theme: "dark",
+                autoClose: 1500,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                type: "warning",
+            });
+            return;
+        }
+        let params = {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+        }
+        try {
+            const response = await axios.get(`${baseUrl}register`, {
+                params,
+            });
+            if (response.status === 200) {
+                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("self", JSON.stringify(response.data.user));
+                setIsRegisterSubmitted(false);
+                toast.success('Register Successfully.', {
+                    theme: "colored",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    pauseOnHover: true,
+                    type: "success",
+                });
+                navigate('/');
+            }
+        } catch (error) {
+            setIsRegisterSubmitted(false);
+            toast.error(error.response.data.errorDetails, {
+                theme: "colored",
+                autoClose: 1500,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                type: "success",
+            })
+        }
+    }
+    const login = async (e: any) => {
+        e.preventDefault();
+        setIsLoginSubmitted(true);
+        if (formData.email.trim() === "" || formData.password.trim() === "") {
+            setIsLoginSubmitted(false);
+            toast.error("Please fill required Fields!", {
+                theme: "dark",
+                autoClose: 1500,
+                hideProgressBar: true,
+                pauseOnHover: true,
+                type: "warning",
+            });
+            return;
+        }
+        const params = {
+            email: formData.email,
+            password: formData.password,
+        }
+        try {
+            const response = await axios.post(`${baseUrl}login`, params);
+            if (response.status === 200) {
+                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("self", JSON.stringify(response.data.user));
+                setIsLoginSubmitted(false);
+                toast.success('Login Successfully.', {
+                    theme: "colored",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    pauseOnHover: true,
+                    type: "success",
+                });
+                navigate('/');
+            }
+        } catch (err) {
+            setIsLoginSubmitted(false);
+            toast.error(err.response?.data?.errorDetails, {
+                theme: "colored",
+                hideProgressBar: true,
+                type: "warning",
+                autoClose: 1500,
+                pauseOnHover: true
+            });
+        }
+    }
     return (
         <>
             <div
@@ -67,7 +158,9 @@ const Auth = () => {
                                 <input
                                     type="email"
                                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
-                                    placeholder="you@example.com"
+                                    placeholder="Your Email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
                                 />
                             </div>
                             <div>
@@ -75,14 +168,18 @@ const Auth = () => {
                                 <input
                                     type="password"
                                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
-                                    placeholder="••••••••"
+                                    placeholder="Your Password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
                                 />
                             </div>
                             <button
                                 type="submit"
                                 className="w-full bg-cyan-600 hover:bg-cyan-700 transition-all duration-300 text-white py-2 px-4 rounded-md font-semibold shadow-md"
-                            >
-                                Login
+                                onClick={(e) => login(e)}
+                                disabled={isLoginSubmitted}>
+                                {isLoginSubmitted ?
+                                    <i className="fa fa-spinner text-white animate-spin"></i> : null} Login
                             </button>
                             <p className="text-center text-sm text-gray-500 mt-4">
                                 Don’t have an account?{' '}
@@ -102,6 +199,8 @@ const Auth = () => {
                                     type="text"
                                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
                                     placeholder="Your Name"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
                                 />
                             </div>
                             <div>
@@ -109,7 +208,9 @@ const Auth = () => {
                                 <input
                                     type="email"
                                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
-                                    placeholder="you@example.com"
+                                    placeholder="Your Email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
                                 />
                             </div>
                             <div>
@@ -117,22 +218,19 @@ const Auth = () => {
                                 <input
                                     type="password"
                                     className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
-                                    placeholder="••••••••"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                                <input
-                                    type="password"
-                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
-                                    placeholder="••••••••"
+                                    placeholder="password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
                                 />
                             </div>
                             <button
                                 type="submit"
                                 className="w-full bg-cyan-600 hover:bg-cyan-700 transition-all duration-300 text-white py-2 px-4 rounded-md font-semibold shadow-md"
+                                disabled={isRegisterSubmitted}
+                                onClick={(e) => register(e)}
                             >
-                                Register
+                                {isRegisterSubmitted ?
+                                    <i className="fa fa-spinner text-white animate-spin"></i> : null} Register
                             </button>
                             <p className="text-center text-sm text-gray-500 mt-4">
                                 Already have an account?{' '}
@@ -146,10 +244,6 @@ const Auth = () => {
                         </form>
                     )}
                 </div>
-            </div>
-            <div>
-                <button onClick={showSuccess}>Show Success</button>
-                <button onClick={showError}>Show Error</button>
             </div>
         </>
     )
