@@ -1,8 +1,10 @@
 import {Category} from '../constants/Category.js'
+import {useNavigate} from "react-router";
 
 const Dashboard = () => {
+    const navigate = useNavigate();
     const goTo = (category) => {
-
+        navigate('/question')
     }
     return (
         <div
