@@ -1,9 +1,10 @@
+// @ts-ignore
 import {Category} from '../constants/Category.js'
 import {useNavigate} from "react-router";
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const goTo = (category) => {
+    const goTo = () => {
         navigate('/question')
     }
     return (
@@ -26,7 +27,7 @@ const Dashboard = () => {
 
             <div
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 w-full max-w-screen-xl z-10">
-                {Category?.map((cat, index) => (
+                {Category?.map((cat: any, index: any) => (
                     <div
                         key={index}
                         className="bg-white/80 backdrop-blur-lg text-cyan-800 font-semibold text-center px-4 py-6 rounded-2xl shadow-lg
@@ -34,7 +35,7 @@ const Dashboard = () => {
                         transform transition-all duration-300 hover:scale-105
                         animate-fadeInUp cursor-pointer hover:text-yellow-500 hover:border-yellow-500"
                         style={{animationDelay: `${index * 40}ms`, animationFillMode: 'both'}}
-                        onClick={(cat) => goTo(cat)}
+                        onClick={() => goTo()}
                     >
                         <i className={cat.icon}></i>
                         <p className="text-sm sm:text-sm"> {cat.name}</p>

@@ -1,4 +1,4 @@
-export const Category = [
+export let Category = [
     {"name": "General Knowledge", "value": "9", "icon": "fa fa-lightbulb"},
     {"name": "Books", "value": "10", "icon": "fa fa-book"},
     {"name": "Film", "value": "11", "icon": "fa fa-film"},

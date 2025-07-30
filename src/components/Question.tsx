@@ -6,7 +6,7 @@ import axios from "axios";
 const Question = () => {
     const appUrl = import.meta.env.VITE_API_BACKEND_URL;
     const navigate = useNavigate();
-    const [selfData, setSelfData] = useState(null);
+    const [selfData, setSelfData] = useState({self:'', token:''});
     const [question, setQuestion] = useState({
         id: '',
         question: '',
@@ -31,7 +31,7 @@ const Question = () => {
         let self = localStorage.getItem('self');
         let token = localStorage.getItem('token');
         if (self && token) {
-            setSelfData({...selfData, self: JSON.parse(self), token: token});
+            setSelfData({ self: JSON.parse(self), token: token});
         } else {
             toast.warning('Please Login!', {
                 position: "top-right",
@@ -58,7 +58,7 @@ const Question = () => {
             } else {
                 // toast.error(response.data.errorDetails);
             }
-        } catch (err) {
+        } catch (err:any) {
             console.log(err, err.data, err.error)
             if (err.status == 401) {
                 toast.error(err.response.data.errorDetails);
@@ -97,7 +97,7 @@ const Question = () => {
                 toast.error(response.data.errorDetails);
                 get()
             }
-        } catch (err) {
+        } catch (err:any) {
             if (err.response.data.message) {
                 toast.error(err.response.data.message + ', ' + 'Correct option is ' + err.response.data.data);
             } else {

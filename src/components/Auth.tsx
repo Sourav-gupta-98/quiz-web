@@ -7,7 +7,6 @@ const Auth = () => {
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_API_BACKEND_URL;
     const [isLogin, setIsLogin] = useState(true);
-    const [isRegister, setIsRegister] = useState(true);
     const [isLoginSubmitted, setIsLoginSubmitted] = useState(false);
     const [isRegisterSubmitted, setIsRegisterSubmitted] = useState(false);
     const [formData, setFormData] = useState({
@@ -57,7 +56,7 @@ const Auth = () => {
                 });
                 navigate('/');
             }
-        } catch (error) {
+        } catch (error:any) {
             setIsRegisterSubmitted(false);
             toast.error(error.response.data.errorDetails, {
                 theme: "colored",
@@ -101,7 +100,7 @@ const Auth = () => {
                 });
                 navigate('/');
             }
-        } catch (err) {
+        } catch (err:any) {
             setIsLoginSubmitted(false);
             toast.error(err.response?.data?.errorDetails, {
                 theme: "colored",

@@ -1,4 +1,4 @@
-import {Navigate, redirect, Route, Routes} from "react-router";
+import {Navigate, Route, Routes} from "react-router";
 import Auth from "./components/Auth";
 import {ToastContainer} from 'react-toastify';
 import Dashboard from "./components/Dashboard.tsx";
@@ -7,7 +7,6 @@ import Question from "./components/Question.tsx";
 
 function App() {
 
-    const app = import.meta.env.VITE_API_BACKEND_URL;
     return (
         <>
             <Routes>
