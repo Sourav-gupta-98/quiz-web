@@ -6,7 +6,7 @@ import axios from "axios";
 
 interface SelfData {
     self: any;
-    token: string;
+    token: any;
 }
 
 const Question = () => {
@@ -37,7 +37,7 @@ const Question = () => {
         let self = localStorage.getItem('self');
         let token = localStorage.getItem('token');
         if (self && token) {
-            setSelfData({ self: JSON.parse(self), token: token});
+            setSelfData({self: JSON.parse(self), token: token});
         } else {
             toast.warning('Please Login!', {
                 position: "top-right",
@@ -54,7 +54,7 @@ const Question = () => {
             console.log('selfData get', selfData);
             let response = await axios.get(`${appUrl}question`, {
                 headers: {
-                    Authorization: `Bearer ${selfData.token}`
+                    Authorization: `Bearer ${selfData?.token}`
                 }
             })
             console.log(response);
@@ -64,7 +64,7 @@ const Question = () => {
             } else {
                 // toast.error(response.data.errorDetails);
             }
-        } catch (err:any) {
+        } catch (err: any) {
             console.log(err, err.data, err.error)
             if (err.status == 401) {
                 toast.error(err.response.data.errorDetails);
@@ -93,7 +93,7 @@ const Question = () => {
         try {
             let response = await axios.put(`${appUrl}question`, params, {
                 headers: {
-                    Authorization: `Bearer ${selfData.token}`
+                    Authorization: `Bearer ${selfData?.token}`
                 }
             })
             if (response.status == 200) {
@@ -103,7 +103,7 @@ const Question = () => {
                 toast.error(response.data.errorDetails);
                 get()
             }
-        } catch (err:any) {
+        } catch (err: any) {
             if (err.response.data.message) {
                 toast.error(err.response.data.message + ', ' + 'Correct option is ' + err.response.data.data);
             } else {
