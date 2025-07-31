@@ -47,7 +47,6 @@ const Dashboard = () => {
         if (!quizData?.category.trim() || !quizData.type.trim() || !quizData.difficulty.trim()) {
             toast.error('Something Went Wrong!', {
                 theme: 'dark',
-                duration: 1500,
                 pauseOnHover: true,
                 hideProgressBar: true,
                 position: "top-right"
@@ -70,7 +69,7 @@ const Dashboard = () => {
                 toast.error('Something went Wrong');
             }
 
-        } catch (err) {
+        } catch (err:any) {
             setIsSubmitting(false);
             toast.error(err.response.data.errorDetails);
         }

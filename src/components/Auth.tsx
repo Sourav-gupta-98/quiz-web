@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 import axios from "axios";
 import {useNavigate} from "react-router";
 
-const Auth = ({updateSelfData}) => {
+const Auth = ({updateSelfData}:any) => {
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_API_BACKEND_URL;
     const [isLogin, setIsLogin] = useState(true);

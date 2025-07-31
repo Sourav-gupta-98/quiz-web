@@ -21,7 +21,6 @@ const Question = () => {
         type: ''
     });
     const [selectOption, setSelectOption] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         let self = localStorage.getItem('self');
@@ -44,7 +43,6 @@ const Question = () => {
     }
 
     const get = async () => {
-        setIsSubmitting(true);
         try {
             let response = await axios.get(`${appUrl}question`, {
                 headers: {
@@ -52,7 +50,6 @@ const Question = () => {
                 }
             })
             if (response.status == 200) {
-                setIsSubmitting(false);
                 setQuestion(response.data.questions);
             }
         } catch (err: any) {
