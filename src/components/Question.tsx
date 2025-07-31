@@ -1,18 +1,13 @@
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router";
 import {toast} from "react-toastify";
 import axios from "axios";
-
-
-interface SelfData {
-    self: any;
-    token: any;
-}
+import {LoginData} from "../ContextData.tsx";
 
 const Question = () => {
     const appUrl = import.meta.env.VITE_API_BACKEND_URL;
+    const selfData = useContext(LoginData)
     const navigate = useNavigate();
-    const [selfData, setSelfData] = useState<SelfData | undefined>(undefined);
     const [question, setQuestion] = useState({
         id: '',
         question: '',
@@ -29,30 +24,17 @@ const Question = () => {
     useEffect(() => {
         CheckLogin()
     }, []);
-    useEffect(() => {
-        get()
-
-    }, [selfData]);
 
     const CheckLogin = () => {
-        let self = localStorage.getItem('self');
-        let token = localStorage.getItem('token');
-        if (self && token) {
-            setSelfData({self: JSON.parse(self), token: token});
-        } else {
-            toast.warning('Please Login!', {
-                position: "top-right",
-                autoClose: 1500,
-                hideProgressBar: true,
-                theme: 'colored'
-            })
+        console.log("CheckLogin context", selfData);
+        if (!selfData?.self || !selfData?.token) {
             navigate('/auth');
         }
+        get()
     }
 
     const get = async () => {
         try {
-            console.log('selfData get', selfData);
             let response = await axios.get(`${appUrl}question`, {
                 headers: {
                     Authorization: `Bearer ${selfData?.token}`

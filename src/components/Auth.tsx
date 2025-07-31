@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 import axios from "axios";
 import {useNavigate} from "react-router";
 
-const Auth = () => {
+const Auth = ({updateSelfData}) => {
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_API_BACKEND_URL;
     const [isLogin, setIsLogin] = useState(true);
@@ -54,6 +54,7 @@ const Auth = () => {
                     pauseOnHover: true,
                     type: "success",
                 });
+                updateSelfData({self: response.data.user, token: response.data.token});
                 navigate('/');
             }
         } catch (error:any) {
@@ -90,6 +91,7 @@ const Auth = () => {
             if (response.status === 200) {
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem("self", JSON.stringify(response.data.user));
+                updateSelfData({self: response.data.user, token: response.data.token});
                 setIsLoginSubmitted(false);
                 toast.success('Login Successfully.', {
                     theme: "colored",
@@ -98,6 +100,7 @@ const Auth = () => {
                     pauseOnHover: true,
                     type: "success",
                 });
+
                 navigate('/');
             }
         } catch (err:any) {
