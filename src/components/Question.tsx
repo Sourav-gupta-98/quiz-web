@@ -31,6 +31,7 @@ const Question = () => {
     }, []);
     useEffect(() => {
         get()
+
     }, [selfData]);
 
     const CheckLogin = () => {
