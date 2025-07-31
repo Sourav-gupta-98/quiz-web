@@ -1,3 +1,6 @@
 import {createContext} from "react";
 
-export const LoginData = createContext({self: '', token: ''});
+let self = localStorage.getItem('self');
+let token = localStorage.getItem('token');
+
+export const LoginData = createContext({self: self ? JSON.parse(self) : '', token: token ? token : ''});

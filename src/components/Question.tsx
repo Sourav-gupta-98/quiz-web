@@ -3,6 +3,7 @@ import {useNavigate} from "react-router";
 import {toast} from "react-toastify";
 import axios from "axios";
 import {LoginData} from "../ContextData.tsx";
+import * as he from 'he';
 
 const Question = () => {
     const appUrl = import.meta.env.VITE_API_BACKEND_URL;
@@ -20,13 +21,22 @@ const Question = () => {
         type: ''
     });
     const [selectOption, setSelectOption] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
+        let self = localStorage.getItem('self');
+        let token = localStorage.getItem('token');
+        if ((!selfData || !selfData.self || !selfData.token) && self && token) {
+            return;
+        } else if ((!selfData || !selfData.self || !selfData.token) && (!self || !token)) {
+            navigate('/auth');
+        }
         CheckLogin()
-    }, []);
+    }, [selfData]);
 
     const CheckLogin = () => {
-        console.log("CheckLogin context", selfData);
+        console.log(selfData);
+        // return
         if (!selfData?.self || !selfData?.token) {
             navigate('/auth');
         }
@@ -34,27 +44,21 @@ const Question = () => {
     }
 
     const get = async () => {
+        setIsSubmitting(true);
         try {
             let response = await axios.get(`${appUrl}question`, {
                 headers: {
                     Authorization: `Bearer ${selfData?.token}`
                 }
             })
-            console.log(response);
             if (response.status == 200) {
-                console.log(response.data.questions)
+                setIsSubmitting(false);
                 setQuestion(response.data.questions);
-            } else {
-                // toast.error(response.data.errorDetails);
             }
         } catch (err: any) {
-            console.log(err, err.data, err.error)
-            if (err.status == 401) {
-                toast.error(err.response.data.errorDetails);
-                localStorage.removeItem('self');
-                localStorage.removeItem('token');
+            toast.error(err.response.data.errorDetails);
+            if (err.response.status == 401) {
                 navigate('/auth');
-
             }
         }
     }
@@ -80,6 +84,7 @@ const Question = () => {
                 }
             })
             if (response.status == 200) {
+                setSelectOption("");
                 toast.success(response.data.message);
                 get()
             } else if (response.status == 404) {
@@ -101,123 +106,86 @@ const Question = () => {
             {
                 question && question.id ?
                     <div
-                        className="relative min-h-screen bg-gradient-to-br from-cyan-200 to-cyan-400 p-4 flex items-center justify-center overflow-hidden">
+                        className="relative min-h-screen bg-gradient-to-br from-cyan-300 via-cyan-400 to-violet-500 p-4 flex items-center justify-center overflow-hidden"
+                    >
                         {/* Background Blobs */}
                         <div
-                            className="absolute top-[-50px] left-[-50px] w-72 h-72 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                            className="absolute top-[-60px] left-[-60px] w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"
+                        ></div>
                         <div
-                            className="absolute top-[200px] right-[-50px] w-72 h-72 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                            className="absolute top-[220px] right-[-70px] w-80 h-80 bg-violet-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"
+                        ></div>
+                        <div
+                            className="absolute bottom-[100px] left-[100px] w-72 h-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"
+                        ></div>
+                        {/* Quiz Card */}
+                        <div
+                            className="z-10 w-full max-w-2xl bg-white/90 backdrop-blur-2xl rounded-[2rem] border-4 border-pink-200 shadow-xl shadow-pink-200/40 p-8 animate-fade-in-down hover:scale-[1.01] transition-all duration-300 ease-out">
 
-                        {/* Question Card */}
-                        <div className="z-10 w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
-                            {/* Icon and Question */}
-                            <div className="flex items-center mb-4">
-                                <div className="text-cyan-600 text-3xl mr-2"></div>
-                                <h1 className="text-2xl font-bold text-cyan-700">{question?.question}</h1>
+                            {/* Question Header */}
+                            <div className="flex items-center mb-6 gap-3 animate-bounce-slow">
+                                <div className="text-4xl animate-wiggle"><i className="fa fa-question text-indigo-500 text-4xl"></i></div>
+                                <h1 className="text-2xl sm:text-3xl font-extrabold text-pink-600 leading-snug drop-shadow-sm">{he.decode(question?.question)}</h1>
                             </div>
 
-                            {/* Options */}
-                            {question.option_1 && <div className="space-y-3 mt-4">
-                                <button onClick={() => setSelectOption(question.option_1)}
-                                        className={`w-full flex items-center px-5 py-3 rounded-lg transition-all duration-200
-                ${selectOption === question?.option_1 ? "bg-cyan-200 scale-[1.01] shadow-md" : "bg-cyan-100 hover:bg-cyan-200 hover:scale-[1.02]"}`}>
-                                    <div className="w-5 h-5 mr-4 flex items-center justify-center">
-                                        <div
-                                            className="w-4 h-4 border-2 border-cyan-600 rounded-full flex items-center justify-center">
-                                            {selectOption === question?.option_1 &&
-                                                <div className="w-2 h-2 bg-black rounded-full"/>}
-                                        </div>
+                            {/* Options List */}
+                            {[question.option_1, question.option_2, question.option_3, question.option_4].map((opt, i) => (
+                                opt && (
+                                    <div className="mt-4" key={i}>
+                                        <button
+                                            onClick={() => setSelectOption(opt)}
+                                            className={`w-full flex items-center px-5 py-4 rounded-xl text-left transition-all duration-200 border-2
+              ${
+                                                selectOption === opt
+                                                    ? "bg-yellow-100 border-pink-400 scale-[1.02] shadow-lg shadow-pink-200"
+                                                    : "bg-white hover:bg-yellow-50 hover:border-yellow-300 hover:scale-[1.01]"
+                                            }`}>
+                                            <div className="w-6 h-6 mr-4 flex items-center justify-center">
+                                                <div
+                                                    className="w-5 h-5 border-2 border-pink-600 rounded-full flex items-center justify-center">
+                                                    {selectOption === opt && <div
+                                                        className="w-3 h-3 bg-pink-600 rounded-full animate-ping"/>}
+                                                </div>
+                                            </div>
+                                            <span
+                                                className="text-lg text-pink-800 font-semibold">{he.decode(opt)}</span>
+                                        </button>
                                     </div>
-                                    <span className="text-cyan-800 font-medium text-left">{question?.option_1}</span>
-                                </button>
-                            </div>}
+                                )
+                            ))}
 
-                            {question.option_2 && <div className="space-y-3 mt-4">
-                                <button onClick={() => setSelectOption(question.option_2)}
-                                        className={`w-full flex items-center px-5 py-3 rounded-lg transition-all duration-200
-                ${selectOption === question?.option_2 ? "bg-cyan-200 scale-[1.01] shadow-md" : "bg-cyan-100 hover:bg-cyan-200 hover:scale-[1.02]"}`}>
-                                    <div className="w-5 h-5 mr-4 flex items-center justify-center">
-                                        <div
-                                            className="w-4 h-4 border-2 border-cyan-600 rounded-full flex items-center justify-center">
-                                            {selectOption === question?.option_2 &&
-                                                <div className="w-2 h-2 bg-black rounded-full"/>}
-                                        </div>
-                                    </div>
-                                    <span className="text-cyan-800 font-medium text-left">{question?.option_2}</span>
-                                </button>
-                            </div>}
-
-                            {question.option_3 && <div className="space-y-3 mt-4">
-                                <button onClick={() => setSelectOption(question.option_3)}
-                                        className={`w-full flex items-center px-5 py-3 rounded-lg transition-all duration-200
-                ${selectOption === question?.option_3 ? "bg-cyan-200 scale-[1.01] shadow-md" : "bg-cyan-100 hover:bg-cyan-200 hover:scale-[1.02]"}`}>
-                                    <div className="w-5 h-5 mr-4 flex items-center justify-center">
-                                        <div
-                                            className="w-4 h-4 border-2 border-cyan-600 rounded-full flex items-center justify-center">
-                                            {selectOption === question?.option_3 &&
-                                                <div className="w-2 h-2 bg-black rounded-full"/>}
-                                        </div>
-                                    </div>
-                                    <span className="text-cyan-800 font-medium text-left">{question?.option_3}</span>
-                                </button>
-                            </div>}
-
-                            {question.option_4 && <div className="space-y-3 mt-4">
-                                <button onClick={() => setSelectOption(question.option_4)}
-                                        className={`w-full flex items-center px-5 py-3 rounded-lg transition-all duration-200
-                ${selectOption === question?.option_4 ? "bg-cyan-200 scale-[1.01] shadow-md" : "bg-cyan-100 hover:bg-cyan-200 hover:scale-[1.02]"}`}>
-                                    <div className="w-5 h-5 mr-4 flex items-center justify-center">
-                                        <div
-                                            className="w-4 h-4 border-2 border-cyan-600 rounded-full flex items-center justify-center">
-                                            {selectOption === question?.option_4 &&
-                                                <div className="w-2 h-2 bg-black rounded-full"/>}
-                                        </div>
-                                    </div>
-                                    <span className="text-cyan-800 font-medium text-left">{question?.option_4}</span>
-                                </button>
-                            </div>}
-
-
-                            {/* Confirm Button */}
-                            <div className="mt-6 flex justify-between">
+                            {/* Confirm Answer */}
+                            <div className="mt-8 flex justify-center">
                                 <button
                                     disabled={selectOption === null}
-                                    className={`px-6 py-2 text-white font-semibold rounded-lg transition ${
-                                        selectOption === null
-                                            ? "bg-red-300 cursor-not-allowed"
-                                            : "bg-red-600 hover:bg-red-700"
-                                    }`}
-                                >
-                                    Skip
-                                </button>
-                                <button
-                                    disabled={selectOption === null}
-                                    className={`px-6 py-2 text-white font-semibold rounded-lg transition ${
-                                        selectOption === null
-                                            ? "bg-cyan-300 cursor-not-allowed"
-                                            : "bg-cyan-600 hover:bg-cyan-700"
-                                    }`}
+                                    className={`px-6 py-3 rounded-xl shadow-lg font-bold text-white transition-all text-lg 
+          ${selectOption === null
+                                        ? "bg-pink-300 cursor-not-allowed"
+                                        : "bg-pink-500 hover:bg-pink-600 hover:scale-105"}`}
                                     onClick={submit}>
-                                    Confirm
+                                    🎯 Confirm Answer
                                 </button>
                             </div>
 
-                            {/* Footer */}
-                            <div className="mt-4 text-sm text-gray-500 flex justify-between">
-                                <span>Category: {question.category}</span>
-                                <span>Difficulty: {question.difficulty}</span>
+                            {/* Info Footer */}
+                            <div className="mt-6 text-sm text-gray-600 flex justify-between px-2 italic">
+                                <span>📚 Category: {question.category}</span>
+                                <span>⭐ Difficulty: {question.difficulty}</span>
                             </div>
 
-                            <div className="flex justify-center mt-5">
+                            {/* Next Question */}
+                            <div className="flex justify-center mt-6">
                                 <button
                                     disabled={selectOption === null}
-                                    className="px-6 py-2 text-white font-semibold rounded-lg transition bg-green-500 hover:bg-green-600"
+                                    className="px-6 py-3 text-white font-bold rounded-xl transition bg-green-500 hover:bg-green-600 hover:scale-105 shadow-lg"
                                     onClick={get}>
-                                    Next Question
+                                    🚀 Next Question
                                 </button>
                             </div>
                         </div>
                     </div>
+
+
                     :
                     <div
                         className="relative min-h-screen bg-gradient-to-br from-cyan-200 to-cyan-400 p-4 flex items-center justify-center overflow-hidden">

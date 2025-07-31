@@ -15,6 +15,7 @@ const Auth = ({updateSelfData}) => {
         password: ""
     })
     useEffect(() => {
+        console.log('auth')
         const self = localStorage.getItem('self');
         const token = localStorage.getItem('token');
         if (self && token) {
@@ -116,21 +117,25 @@ const Auth = ({updateSelfData}) => {
     }
     return (
         <>
-            <div
-                className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-500 to-cyan-700 p-4">
-                <div
-                    className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative overflow-hidden transition-all duration-500">
-                    <div
-                        className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 rounded-t-2xl"/>
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-400 via-cyan-500 to-violet-600 p-4 relative overflow-hidden">
+                {/* Animated Background Blobs */}
+                <div className="absolute w-80 h-80 bg-cyan-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 top-[-80px] left-[-60px] animate-blob"></div>
+                <div className="absolute w-72 h-72 bg-violet-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 top-[200px] right-[-50px] animate-blob animation-delay-2000"></div>
+                <div className="absolute w-64 h-64 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 bottom-[80px] left-[100px] animate-blob animation-delay-4000"></div>
+
+                {/* Card */}
+                <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full p-8 relative overflow-hidden border border-white/30 transition-all duration-500 animate-fade-in-up">
+                    {/* Gradient Top Bar */}
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 via-cyan-500 to-violet-500 rounded-t-3xl" />
 
                     {/* Tabs */}
-                    <div className="flex justify-center mt-2 mb-8">
+                    <div className="flex justify-center mt-2 mb-6">
                         <button
                             onClick={() => setIsLogin(true)}
                             className={`px-6 py-2 text-sm font-semibold rounded-t-md transition-colors duration-300 ${
                                 isLogin
-                                    ? 'bg-cyan-500 text-white shadow-md'
-                                    : 'bg-gray-100 text-cyan-700 hover:bg-gray-200'
+                                    ? 'bg-violet-500 text-white shadow-md'
+                                    : 'bg-gray-100 text-violet-600 hover:bg-gray-200'
                             }`}
                         >
                             Login
@@ -139,54 +144,57 @@ const Auth = ({updateSelfData}) => {
                             onClick={() => setIsLogin(false)}
                             className={`px-6 py-2 text-sm font-semibold rounded-t-md ml-2 transition-colors duration-300 ${
                                 !isLogin
-                                    ? 'bg-cyan-500 text-white shadow-md'
-                                    : 'bg-gray-100 text-cyan-700 hover:bg-gray-200'
+                                    ? 'bg-violet-500 text-white shadow-md'
+                                    : 'bg-gray-100 text-violet-600 hover:bg-gray-200'
                             }`}
                         >
                             Register
                         </button>
                     </div>
 
-                    {/* Form title */}
-                    <h2 className="text-center text-2xl font-bold text-cyan-600 mb-6 transition-all duration-300">
-                        {isLogin ? 'Welcome Back 👋' : 'Create an Account'}
+                    {/* Title */}
+                    <h2 className="text-center text-2xl font-extrabold text-violet-600 mb-6">
+                        {isLogin ? 'Welcome Back 🎉' : 'Join the Adventure 🚀'}
                     </h2>
 
-                    {/* Forms */}
+                    {/* Login Form */}
                     {isLogin ? (
                         <form className="space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Email</label>
                                 <input
                                     type="email"
-                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
                                     placeholder="Your Email"
                                     value={formData.email}
-                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Password</label>
                                 <input
                                     type="password"
-                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
                                     placeholder="Your Password"
                                     value={formData.password}
-                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="w-full bg-cyan-600 hover:bg-cyan-700 transition-all duration-300 text-white py-2 px-4 rounded-md font-semibold shadow-md"
                                 onClick={(e) => login(e)}
-                                disabled={isLoginSubmitted}>
-                                {isLoginSubmitted ?
-                                    <i className="fa fa-spinner text-white animate-spin"></i> : null} Login
+                                disabled={isLoginSubmitted}
+                                className="w-full bg-violet-500 hover:bg-violet-600 transition-all duration-300 text-white py-2 px-4 rounded-xl font-semibold shadow-md"
+                            >
+                                {isLoginSubmitted && (
+                                    <i className="fa fa-spinner text-white animate-spin mr-2" />
+                                )}
+                                Login
                             </button>
                             <p className="text-center text-sm text-gray-500 mt-4">
                                 Don’t have an account?{' '}
                                 <span
-                                    className="text-cyan-600 cursor-pointer hover:underline"
+                                    className="text-violet-600 cursor-pointer hover:underline"
                                     onClick={() => setIsLogin(false)}
                                 >
             Register
@@ -194,50 +202,53 @@ const Auth = ({updateSelfData}) => {
                             </p>
                         </form>
                     ) : (
+                        // Register Form
                         <form className="space-y-5">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Name</label>
                                 <input
                                     type="text"
-                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
                                     placeholder="Your Name"
                                     value={formData.name}
-                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Email</label>
                                 <input
                                     type="email"
-                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
                                     placeholder="Your Email"
                                     value={formData.email}
-                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Password</label>
                                 <input
                                     type="password"
-                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400"
                                     placeholder="password"
                                     value={formData.password}
-                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="w-full bg-cyan-600 hover:bg-cyan-700 transition-all duration-300 text-white py-2 px-4 rounded-md font-semibold shadow-md"
-                                disabled={isRegisterSubmitted}
                                 onClick={(e) => register(e)}
+                                disabled={isRegisterSubmitted}
+                                className="w-full bg-violet-500 hover:bg-violet-600 transition-all duration-300 text-white py-2 px-4 rounded-xl font-semibold shadow-md"
                             >
-                                {isRegisterSubmitted ?
-                                    <i className="fa fa-spinner text-white animate-spin"></i> : null} Register
+                                {isRegisterSubmitted && (
+                                    <i className="fa fa-spinner text-white animate-spin mr-2" />
+                                )}
+                                Register
                             </button>
                             <p className="text-center text-sm text-gray-500 mt-4">
                                 Already have an account?{' '}
                                 <span
-                                    className="text-cyan-600 cursor-pointer hover:underline"
+                                    className="text-violet-600 cursor-pointer hover:underline"
                                     onClick={() => setIsLogin(true)}
                                 >
             Login
@@ -247,6 +258,7 @@ const Auth = ({updateSelfData}) => {
                     )}
                 </div>
             </div>
+
         </>
     )
 }
